@@ -1,0 +1,166 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Socket.IO chat</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+        integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <style>
+        table {
+            text-align: center;
+        }
+
+        .connected {
+            color: green;
+        }
+
+        .notConnected {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between">
+            <h4 class="display-4"><u>Matches</u></h4>
+            <div class="d-flex align-items-center">
+                <p class="mb-0 mr-3">
+                    <span class="text-secondary"># Live Matches: </span><span><%= matches.length %></span>
+                </p>
+                <p class="mb-0" >
+                    <span class="text-secondary"># Finished Matches: </span> <span><%= finishedMatches.length %></span>
+                </p>
+            </div>
+            <div class="d-flex align-items-center">
+                <span class="text-secondary mr-1">Users in queue:</span>
+                <span id="numUsers"><%= numUsersOnline %></span>
+            </div>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th class="table-primary" style="vertical-align: middle;" rowspan="2" colspan="3">Match</th>
+                    <th colspan="6" class="table-success">Live Matches</th>
+                </tr>
+                <tr>
+                    <th class="table-dark" colspan="3">Player 1</th>
+                    <th class="table-dark" colspan="3">Player 2</th>
+                </tr>
+                <tr>
+                    <th>Id</th>
+                    <th>Rounds Played</th>
+                    <th>Live</th>
+                    <th>Id</th>
+                    <th>Connected</th>
+                    <th>Progress</th>
+                    <th>Id</th>
+                    <th>Connected</th>
+                    <th>Progress</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (matches.length === 0) { %>
+                <tr>
+                    <td colspan="9" class="font-weight-bold text-info">No matches currently in play.</td>
+                </tr>
+                <% } %>
+                <% matches.forEach(function(match) { %>
+                <tr>
+                    <td><%= match.matchSocket.name %></td>
+                    <td><%= match.roundNo %></td>
+                    <% if (match.inPlay) { %>
+                    <td class="connected"><i class="fas fa-check-circle"></i></td>
+                    <% } else { %>
+                    <td class="notConnected"><i class="fas fa-times-circle"></i></td>
+                    <% } %>
+                    <td><%= match.playerOne.identifier %></td>
+                    <% if (match.playerOne.connectedToMatch) { %>
+                    <td class="connected"><i class="fas fa-check-circle"></i></td>
+                    <% } else { %>
+                    <td class="notConnected"><i class="fas fa-times-circle"></i></td>
+                    <% } %>
+                    <td><%= match.playerOne.progress %>%</td>
+                    <td><%= match.playerTwo.identifier %></td>
+                    <% if (match.playerTwo.connectedToMatch) { %>
+                    <td class="connected"><i class="fas fa-check-circle"></i></td>
+                    <% } else { %>
+                    <td class="notConnected"><i class="fas fa-times-circle"></i></td>
+                    <% } %>
+                    <td><%= match.playerTwo.progress %>%</td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+
+        <br>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th class="table-primary" style="vertical-align: middle;" rowspan="2" colspan="3">Match</th>
+                    <th colspan="6" class="table-danger">Finished Matches</th>
+                </tr>
+                <tr>
+                    <th class="table-dark" colspan="3">Player 1</th>
+                    <th class="table-dark" colspan="3">Player 2</th>
+                </tr>
+                <tr>
+                    <th>Id</th>
+                    <th>Rounds Played</th>
+                    <th>Live</th>
+                    <th>Id</th>
+                    <th>Connected</th>
+                    <th>Progress</th>
+                    <th>Id</th>
+                    <th>Connected</th>
+                    <th>Progress</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (finishedMatches.length === 0) { %>
+                <tr>
+                    <td colspan="9" class="font-weight-bold text-info">No matches finished yet.</td>
+                </tr>
+                <% } %>
+                <% finishedMatches.forEach(function(match) { %>
+                <tr>
+                    <td><%= match.matchSocket.name %></td>
+                    <td><%= match.roundNo %></td>
+                    <% if (match.inPlay) { %>
+                    <td class="connected"><i class="fas fa-check-circle"></i></td>
+                    <% } else { %>
+                    <td class="notConnected"><i class="fas fa-times-circle"></i></td>
+                    <% } %>
+                    <td><%= match.playerOne.identifier %></td>
+                    <% if (match.playerOne.connectedToMatch) { %>
+                    <td class="connected"><i class="fas fa-check-circle"></i></td>
+                    <% } else { %>
+                    <td class="notConnected"><i class="fas fa-times-circle"></i></td>
+                    <% } %>
+                    <td><%= match.playerOne.progress %>%</td>
+                    <td><%= match.playerTwo.identifier %></td>
+                    <% if (match.playerTwo.connectedToMatch) { %>
+                    <td class="connected"><i class="fas fa-check-circle"></i></td>
+                    <% } else { %>
+                    <td class="notConnected"><i class="fas fa-times-circle"></i></td>
+                    <% } %>
+                    <td><%= match.playerTwo.progress %>%</td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+        <hr>
+        <div>
+            <h4 class="display-4"><u>Queue</u></h4>
+            <ol>
+                <% queue.forEach(p => { %>
+                <li><%= p.identifier %></li>
+                <% }) %>
+            </ol>
+        </div>
+    </div>
+</body>
+
+</html>
